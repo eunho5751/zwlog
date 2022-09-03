@@ -41,14 +41,14 @@ For that reason, it's not recommended to use `enum class` because it requires yo
 
 <br/>
 
-3. **Set a tag of each severity level**
+3. **Set tags for each severity level**
 
 ```c++
 zwlog::Get().SetSeverity(Severity::Info, "Info");
 zwlog::Get().SetSeverity(Severity::Warning, "Warning");
 zwlog::Get().SetSeverity(Severity::Error, "Error");
 ```
-A Tag is used to represent each severity level as a string.
+Severity tags are used to represent each severity level as a string.
 
 <br/>
 
