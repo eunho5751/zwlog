@@ -17,7 +17,7 @@ namespace zwlog
 
 	Logger::Logger()
 	{
-		SetSeverity(-1, "Undefined Severity");
+
 	}
 
 	Logger& Logger::operator+=(LogContext& context)
@@ -46,12 +46,6 @@ namespace zwlog
 
 	void Logger::SetSeverity(int severity_id, std::string tag)
 	{
-		if (severity_id == -1)
-		{
-			// -1 is reserved to indicate that the severity is not set 
-			return;
-		}
-
 		severity_tag_map_[severity_id] = std::move(tag);
 	}
 
@@ -63,7 +57,8 @@ namespace zwlog
 		}
 
 		// severity tag is not found
-		return severity_tag_map_.at(-1);
+		static std::string undef_severity = "Undefined Severity";
+		return undef_severity;
 	}
 
 	bool Logger::HasSeverity(int severity_id) const noexcept
