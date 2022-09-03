@@ -3,7 +3,7 @@
 
 namespace zwlog
 {
-	LogContext::LogContext(std::pair<int, std::string> severity, const std::source_location& location) : severity_(std::move(severity)), location_(location)
+	LogContext::LogContext(int severity_id, const std::source_location& location) : severity_id_(severity_id), location_(location)
 	{
 
 	}
@@ -18,9 +18,9 @@ namespace zwlog
 		return std::move(stream_).str();
 	}
 
-	const std::pair<int, std::string>& LogContext::GetSeverity() const noexcept
+	int LogContext::GetSeverityId() const noexcept
 	{
-		return severity_;
+		return severity_id_;
 	}
 
 	uint_least32_t LogContext::GetLine() const noexcept

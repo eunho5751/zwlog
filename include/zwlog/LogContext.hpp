@@ -11,7 +11,7 @@ namespace zwlog
 	class LogContext
 	{
 	public:
-		explicit LogContext(std::pair<int, std::string> severity, const std::source_location& location = std::source_location::current());
+		explicit LogContext(int severity_id, const std::source_location& location = std::source_location::current());
 
 		template <typename T>
 		LogContext& operator<<(T&& content)
@@ -22,14 +22,14 @@ namespace zwlog
 
 		std::string GetLog() const&;
 		std::string GetLog()&&;
-		const std::pair<int, std::string>& GetSeverity() const noexcept;
+		int GetSeverityId() const noexcept;
 		uint_least32_t GetLine() const noexcept;
 		uint_least32_t GetColumn() const noexcept;
 		const char* GetFileName() const noexcept;
 		const char* GetFunctionName() const noexcept;
 
 	private:
-		std::pair<int, std::string> severity_;
+		int severity_id_;
 		std::source_location location_;
 		std::ostringstream stream_;
 	};

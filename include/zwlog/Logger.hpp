@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <memory>
 
-#define LOG(severity) zwlog::Get() += zwlog::LogContext({static_cast<int>(severity), zwlog::Get().GetSeverityTag(severity)})
+#define LOG(severity_id) zwlog::Get() += zwlog::LogContext(severity_id)
 
 namespace zwlog
 {

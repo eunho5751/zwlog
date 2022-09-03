@@ -1,5 +1,6 @@
 
 #include "zwlog/DefaultFormatter.hpp"
+#include "zwlog/Logger.hpp"
 
 #include <format>
 
@@ -8,7 +9,7 @@ namespace zwlog
 	std::string DefaultFormatter::Format(const LogContext& context)
 	{
 		std::string fmt = std::format(kFormatString,
-			context.GetSeverity().second, context.GetLog(), context.GetFileName(), context.GetLine(), context.GetFunctionName());
+			Get().GetSeverityTag(context.GetSeverityId()), context.GetLog(), context.GetFileName(), context.GetLine(), context.GetFunctionName());
 		return fmt;
 	}
 
