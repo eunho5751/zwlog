@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <memory>
 
-#define LOG(severity_id) zwlog::Get() += zwlog::LogContext(severity_id)
+#define LOG(group_id, severity_id) zwlog::Get() += zwlog::LogContext(group_id, severity_id)
 
 namespace zwlog
 {
@@ -18,6 +18,8 @@ namespace zwlog
 
 	class Logger
 	{
+		using targets_type = std::vector<std::shared_ptr<LogTargetBase>>;
+
 		friend Logger& Get();
 
 	public:
@@ -28,8 +30,8 @@ namespace zwlog
 
 		Logger& operator+=(LogContext& context);
 
-		void AddTarget(std::shared_ptr<LogTargetBase> target);
-		void RemoveTarget(const std::shared_ptr<LogTargetBase>& target);
+		void AddTarget(int group_id, std::shared_ptr<LogTargetBase> target);
+		void RemoveTarget(int group_id, const std::shared_ptr<LogTargetBase>& target);
 
 		void SetSeverity(int severity_id, std::string tag);
 		const std::string& GetSeverityTag(int severity_id) const noexcept;
@@ -41,6 +43,6 @@ namespace zwlog
 
 	private:
 		std::unordered_map<int, std::string> severity_tag_map_;
-		std::vector<std::shared_ptr<LogTargetBase>> targets_;
+		std::unordered_map<int, targets_type> group_targets_map_;
 	};
 }

@@ -3,6 +3,8 @@
 #include "zwlog/LogContext.hpp"
 #include "zwlog/LogTargetBase.hpp"
 
+#include <utility>
+
 namespace zwlog
 {
 	/* static functions */
@@ -22,26 +24,39 @@ namespace zwlog
 
 	Logger& Logger::operator+=(LogContext& context)
 	{
-		for (const auto& target : targets_)
+		if (auto it = group_targets_map_.find(context.GetGroupId()); it != group_targets_map_.end())
 		{
-			target->Write(context);
-			if (target->ShouldFlush())
+			for (const auto& target : it->second)
 			{
-				target->Flush();
+				target->Write(context);
+				if (target->ShouldFlush())
+				{
+					target->Flush();
+				}
 			}
 		}
 
 		return *this;
 	}
 
-	void Logger::AddTarget(std::shared_ptr<LogTargetBase> target)
+	void Logger::AddTarget(int group_id, std::shared_ptr<LogTargetBase> target)
 	{
-		targets_.push_back(std::move(target));
+		if (auto it = group_targets_map_.find(group_id); it != group_targets_map_.end())
+		{
+			it->second.push_back(std::move(target));
+		}
+		else
+		{
+			group_targets_map_.try_emplace(group_id, targets_type { std::move(target)});
+		}
 	}
 
-	void Logger::RemoveTarget(const std::shared_ptr<LogTargetBase>& target)
+	void Logger::RemoveTarget(int group_id, const std::shared_ptr<LogTargetBase>& target)
 	{
-		std::erase_if(targets_, [&target](const std::shared_ptr<LogTargetBase>& elem) { return target == elem; });
+		if (auto it = group_targets_map_.find(group_id); it != group_targets_map_.end())
+		{
+			std::erase_if(it->second, [&target](const std::shared_ptr<LogTargetBase>& elem) { return target == elem; });
+		}
 	}
 
 	void Logger::SetSeverity(int severity_id, std::string tag)
