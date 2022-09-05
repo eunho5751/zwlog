@@ -8,13 +8,13 @@
 
 namespace zwlog
 {
-	class DefaultFormatter : public ILogFormatter
+	class MessageFormatter : public ILogFormatter
 	{
-		inline static constexpr const char* kFormatString = "[{}] {}\n-- File: {} | Line: {} | Func: {} --\n";
+		inline static constexpr const char* kFormatString = "[{}] {}\n";
 
 	public:
 		std::string Format(const LogContext& context) override;
 
-		static std::shared_ptr<DefaultFormatter> Create();
+		static std::shared_ptr<MessageFormatter> Create();
 	};
 }

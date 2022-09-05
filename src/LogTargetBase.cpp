@@ -1,7 +1,6 @@
 
 #include "zwlog/LogTargetBase.hpp"
-
-#include "zwlog/DefaultFormatter.hpp"
+#include "zwlog/MessageFormatter.hpp"
 
 #include <utility>
 
@@ -17,7 +16,7 @@ namespace zwlog
 		formatter_ = std::move(formatter);
 		if (formatter_ == nullptr)
 		{
-			formatter_ = std::make_shared<DefaultFormatter>();
+			formatter_ = std::make_shared<MessageFormatter>();
 		}
 	}
 
