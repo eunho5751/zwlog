@@ -5,9 +5,10 @@ zwlog is a simple logging library written with modern C++ features.
 
 ## Overview
 The image below shows how logs are processed in this library.
-<img width="100%" alt="image" src="https://user-images.githubusercontent.com/29402080/188267405-c7dd7bc9-d51b-43c8-aa22-8be0d059dd4e.png">
+<img width="100%" alt="image" src="https://user-images.githubusercontent.com/29402080/188460818-d71b7f93-54d9-4ea6-8cd9-18b1d5b4525f.png">
 
-When you do loggings by `LOG`, A `LogContext` class instance is created. it contains some useful information such as your message, the severity tag, and even the file name and function name where the log is emitted. `Logger` then takes the `LogContext` and sends it to `LogTarget*`s added to `Logger`. `LogTargt*`s make a new formatted log by using its formatter. Through the formatter, the log now would contain not only your message but also some information in the `LogContext`. Finally, the log is written to the destinations such as the console buffer, and physical file.
+
+When you do loggings by `LOG`, A `LogContext` class instance is created. it contains some useful information such as your message, the severity tag, and even the file name and function name where the log is emitted. `Logger` then takes the `LogContext` and sends it to `LogTarget*`s of the group you inputted in `LOG`. Each of the `LogTargt*`s makes a new formatted log by using its formatter. Through the formatter, the log now would contain not only your message but also some information in the `LogContext`. Finally, the log is written to the destinations such as the console buffer, and physical file.
 
 <br/>
 
@@ -18,17 +19,12 @@ When you do loggings by `LOG`, A `LogContext` class instance is created. it cont
 
 ## How To Use
 ### Severity Configuration
-1. **Include <zwlog/Logger.hpp>**
+1. **Define your own compile-time constants to use as severity levels**
+
+This step is required to name each integer severity level. <br/>
 
 ```c++
-#include <zwlog/Logger.hpp>
-```
-
-<br/>
-
-2. **Define your own enum to use as severity levels**
-
-```c++
+// LogConstants.hpp
 enum Severity
 {
   Info      = 0,
@@ -41,23 +37,42 @@ For that reason, it's not recommended to use `enum class` because it requires yo
 
 <br/>
 
-3. **Set tags for each severity level**
+2. **Set tags for each severity level**
 
 ```c++
+#include <zwlog/Logger.hpp>
+#include "LogConstants.hpp"
+
+...
+
 zwlog::Get().SetSeverity(Severity::Info, "Info");
 zwlog::Get().SetSeverity(Severity::Warning, "Warning");
 zwlog::Get().SetSeverity(Severity::Error, "Error");
 ```
-Severity tags are used to represent each severity level as a string.
+
+<br/>
+
+### Group Configuration
+This step is required to name each integer group id, as is the case with `enum` instead of integers in Severity Configuration. <br/>
+
+```c++
+// LogConstants.hpp
+enum Group
+{
+  Editor  = 0,
+  Engine
+};
+```
 
 <br/>
 
 ### LogTarget Configuration
-1. **Include `<zwlog/LogTarget*.hpp>` you want to use** <br/>
-( Currently 2 default log targets are supported ) 
+1. **Include `zwlog/LogTarget*.hpp` and the header file where the constants defined above exist** <br/>
+ 
 
 ```c++
 #include <zwlog/LogTargetConsole.hpp> // or LogTargetFile.hpp
+#include "LogConstants.hpp"
 ```
 
 <br/>
@@ -74,24 +89,22 @@ auto console_target = zwlog::LogTargetConsole::Create(zwlog::LogTargetConsole::C
 
 ```c++
 auto console_target = ···;
-zwlog::Get().AddTarget(console_target);
+zwlog::Get().AddTarget(Group::Editor, console_target);
 ```
-`Logger` now can recognize where to output logs without having you designate the target.
 
 <br/>
 
 ### Logging
-1. **Include <zwlog/Logger.hpp>**
 
 ```c++
 #include <zwlog/Logger.hpp>
-```
+#include "LogConstants.hpp"
 
-<br/>
+...
 
-2. **Use `LOG` to output logs**
-
-```c++
 std::string name = "Eunho Choi";
-LOG(Severity::Info) << "My name is " << name << '\n';
+LOG(Group::Editor, Severity::Info) << "My name is " << name << '\n';
 ```
+
+It would be tiresome to include multiple header files when logging. <br/>
+So, I recommend that you create a new header file that includes all the header files for logging. <br/>
