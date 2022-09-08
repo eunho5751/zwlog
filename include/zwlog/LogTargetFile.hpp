@@ -43,7 +43,7 @@ namespace zwlog
 		static std::shared_ptr<LogTargetFile> Create(std::string file_name, OpenMode open_mode = OpenMode::Create);
 
 	protected:
-		void Write(std::string_view str) override;
+		void Write(const LogContext& context, std::string_view formatted_log) override;
 
 	private:
 		std::string file_name_;

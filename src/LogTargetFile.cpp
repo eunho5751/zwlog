@@ -71,9 +71,9 @@ namespace zwlog
 		return true;
 	}
 
-	void LogTargetFile::Write(std::string_view str)
+	void LogTargetFile::Write(const LogContext& context, std::string_view formatted_log)
 	{
-		file_stream_ << str;
+		file_stream_ << formatted_log;
 	}
 
 	const std::string& LogTargetFile::GetFileName() const noexcept

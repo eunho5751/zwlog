@@ -23,6 +23,6 @@ namespace zwlog
 	void LogTargetBase::Write(const LogContext& context)
 	{
 		std::string fmt = formatter_->Format(context);
-		Write(fmt);
+		Write(context, fmt);
 	}
 }

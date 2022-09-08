@@ -26,7 +26,7 @@ namespace zwlog
 		static std::shared_ptr<LogTargetConsole> Create(ConsoleType type);
 
 	protected:
-		void Write(std::string_view str) override;
+		void Write(const LogContext& context, std::string_view formatted_log) override;
 
 	private:
 		ConsoleType type_;

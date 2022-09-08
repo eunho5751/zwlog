@@ -28,9 +28,9 @@ namespace zwlog
 		return type_;
 	}
 
-	void LogTargetConsole::Write(std::string_view str)
+	void LogTargetConsole::Write(const LogContext& context, std::string_view formatted_log)
 	{
-		stream_ << str;
+		stream_ << formatted_log;
 	}
 	
 	std::shared_ptr<LogTargetConsole> LogTargetConsole::Create(ConsoleType type)

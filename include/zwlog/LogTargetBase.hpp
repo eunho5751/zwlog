@@ -32,7 +32,7 @@ namespace zwlog
 		virtual bool ShouldFlush() const = 0;
 
 	protected:
-		virtual void Write(std::string_view str) = 0;
+		virtual void Write(const LogContext& context, std::string_view formatted_log) = 0;
 
 		template <typename T, typename... TArgs>
 			requires std::is_base_of_v<LogTargetBase, T> && std::is_constructible_v<T, TArgs&&...>
