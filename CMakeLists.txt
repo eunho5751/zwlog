@@ -16,7 +16,8 @@ set(SOURCES
 	${SOURCE_DIR}/SourceLocationFormatter.cpp
 
 	${SOURCE_DIR}/LogTargetConsole.cpp
-	${SOURCE_DIR}/LogTargetFile.cpp)
+	${SOURCE_DIR}/LogTargetFile.cpp
+	${SOURCE_DIR}/LogTargetMessageBox.cpp)
 
 set(HEADERS 
 	${HEADER_DIR}/Logger.hpp
@@ -28,7 +29,8 @@ set(HEADERS
 	${HEADER_DIR}/SourceLocationFormatter.hpp
 
 	${HEADER_DIR}/LogTargetConsole.hpp
-	${HEADER_DIR}/LogTargetFile.hpp)
+	${HEADER_DIR}/LogTargetFile.hpp
+	${HEADER_DIR}/LogTargetMessageBox.hpp)
 
 add_library(zwlog ${SOURCES} ${HEADERS})
 target_include_directories(zwlog PUBLIC include)
