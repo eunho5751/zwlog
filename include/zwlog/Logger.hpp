@@ -16,6 +16,13 @@ namespace zwlog
 
 	Logger& Get();
 
+	void AddTarget(int group_id, std::shared_ptr<LogTargetBase> target);
+	void RemoveTarget(int group_id, const std::shared_ptr<LogTargetBase>& target);
+
+	void SetSeverity(int severity_id, std::string tag);
+	const std::string& GetSeverityTag(int severity_id) noexcept;
+	bool HasSeverity(int severity_id) noexcept;
+
 	class Logger
 	{
 		using targets_type = std::vector<std::shared_ptr<LogTargetBase>>;

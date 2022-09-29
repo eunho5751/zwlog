@@ -7,7 +7,9 @@
 
 namespace zwlog
 {
-	/* static functions */
+	/* global */
+	
+	const static std::string kUndefinedSeverity = "Undefined Severity";
 
 	Logger& Get()
 	{
@@ -15,7 +17,32 @@ namespace zwlog
 		return logger;
 	}
 
-	/* member functions */
+	void AddTarget(int group_id, std::shared_ptr<LogTargetBase> target)
+	{
+		Get().AddTarget(group_id, std::move(target));
+	}
+
+	void RemoveTarget(int group_id, const std::shared_ptr<LogTargetBase>& target)
+	{
+		Get().RemoveTarget(group_id, target);
+	}
+
+	void SetSeverity(int severity_id, std::string tag)
+	{
+		Get().SetSeverity(severity_id, std::move(tag));
+	}
+
+	const std::string& GetSeverityTag(int severity_id) noexcept
+	{
+		return Get().GetSeverityTag(severity_id);
+	}
+
+	bool HasSeverity(int severity_id) noexcept
+	{
+		return Get().HasSeverity(severity_id);
+	}
+
+	/* member */
 
 	Logger::Logger()
 	{
@@ -72,8 +99,7 @@ namespace zwlog
 		}
 
 		// severity tag is not found
-		static std::string undef_severity = "Undefined Severity";
-		return undef_severity;
+		return kUndefinedSeverity;
 	}
 
 	bool Logger::HasSeverity(int severity_id) const noexcept
