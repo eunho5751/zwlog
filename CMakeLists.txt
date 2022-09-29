@@ -11,9 +11,8 @@ set(SOURCES
 	${SOURCE_DIR}/Logger.cpp
 	${SOURCE_DIR}/LogContext.cpp
 	${SOURCE_DIR}/LogTargetBase.cpp
-
-	${SOURCE_DIR}/MessageFormatter.cpp
-	${SOURCE_DIR}/SourceLocationFormatter.cpp
+	${SOURCE_DIR}/LogFormatterBase.cpp
+	${SOURCE_DIR}/DefaultFormatter.cpp
 
 	${SOURCE_DIR}/LogTargetConsole.cpp
 	${SOURCE_DIR}/LogTargetFile.cpp
@@ -23,10 +22,8 @@ set(HEADERS
 	${HEADER_DIR}/Logger.hpp
 	${HEADER_DIR}/LogContext.hpp
 	${HEADER_DIR}/LogTargetBase.hpp
-	${HEADER_DIR}/ILogFormatter.hpp
-
-	${HEADER_DIR}/MessageFormatter.hpp
-	${HEADER_DIR}/SourceLocationFormatter.hpp
+	${HEADER_DIR}/LogFormatterBase.hpp
+	${HEADER_DIR}/DefaultFormatter.hpp
 
 	${HEADER_DIR}/LogTargetConsole.hpp
 	${HEADER_DIR}/LogTargetFile.hpp

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "zwlog/ILogFormatter.hpp"
+#include "zwlog/LogFormatterBase.hpp"
 
 #include <string_view>
 #include <memory>
@@ -19,9 +19,9 @@ namespace zwlog
 		LogTargetBase& operator=(const LogTargetBase&) = default;
 		LogTargetBase& operator=(LogTargetBase&&) = default;
 
-		void SetFormatter(std::shared_ptr<ILogFormatter> formatter);
+		void SetFormatter(std::shared_ptr<LogFormatterBase> formatter);
 
-		template <typename T> requires std::is_base_of_v<ILogFormatter, T>
+		template <typename T> requires std::is_base_of_v<LogFormatterBase, T>
 		std::shared_ptr<T> GetFormatter() const
 		{
 			return std::dynamic_pointer_cast<T>(formatter_);
@@ -42,6 +42,6 @@ namespace zwlog
 		}
 
 	private:
-		std::shared_ptr<ILogFormatter> formatter_;
+		std::shared_ptr<LogFormatterBase> formatter_;
 	};
 }
