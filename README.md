@@ -5,9 +5,8 @@ zwlog is a simple logging library written with modern C++ features.
 
 ## Overview
 The image below shows how logs are processed in this library.
-<img width="100%" alt="image" src="https://user-images.githubusercontent.com/29402080/188460818-d71b7f93-54d9-4ea6-8cd9-18b1d5b4525f.png">
 
-When you do logging by `LOG`, A `LogContext` class instance is created. it contains some useful information such as your log message, a severity level, and even a file name and function name where the log is emitted. `Logger` then takes the `LogContext` and sends it to `LogTarget*`s of the group you inputted in `LOG`. Each of the `LogTargt*`s makes a new formatted log by using its formatter. Through the formatter, the newly formatted log would now contain not only your log message but also some information in `LogContext`. Finally, the formatted log is written to the destinations such as a console buffer, and physical file.
+<img width="100%" alt="image" src="https://user-images.githubusercontent.com/29402080/192958333-37ce593a-1e4a-40e0-a638-496de72c6498.png">
 
 <br/>
 
@@ -17,112 +16,78 @@ When you do logging by `LOG`, A `LogContext` class instance is created. it conta
 
 <br/>
 
-## Constructs
-- **Severity** <br/>
-`Severity` is integers used to indicate how serious your log is. You can define `enum` or `const int` to name each severity integer to make it intuitive. Also, if you don't want logs to contain 'Undefined Severity' tag, you should set a tag for each severity level such as `Info`, `Warning`, or `Error`.
-
-- **LogContext** <br/>
-`LogContext` is just a class that contains some useful information such as a severity level, file and function name where a log is emitted. `LogContext` is instantiated when you do logging and is used by `LogFormatter` to make your logs more informative.
-
-- **LogTarget** <br/>
-`LogTarget` class defines where and how logs are outputted. For example, currently provided `LogTargetConsole` and `LogTargetFile` output logs to their console buffer and file, respectively. Your application can create multiple log targets and output logs to them at the same time. This is useful when you want to display logs in UI and then save them to a file to check them back again later.
-
-- **LogFormatter** <br/>
-`LogFormatter` class decorates a log with some additional information to make it more informative. Most of the additional information is usually contained in `LogContext`, but you can also customize a log with any other information you want.
-
-- **Group** <br/>
-`Group` represented by a unique integer is a set of log targets. You can define `enum` or `const int` to name each group integer to make it intuitive. This feature is useful when you want to separate log tagets into several groups. For example, you might want to include `File` or `MessageBox` log targets in `Fatal` group to output fatal errors because it would be impossible to display logs in UI when unrecoverable fatal errors occurred. `Normal` group might contain any log target (ex: IMGUI to display logs immediately in your app) and be used when non-fatal errors occurred.
-
-<br/>
-
-## How To Use
-### Severity Configuration
-1. **Define your own compile-time constants to use as severity levels**
-
-This step is required to name each integer severity level. <br/>
-
-```c++
-// LogConstants.hpp
-enum Severity
-{
-  Info      = 0,
-  Warning,
-  Error
-};
-```
-You don't necessarily have to define an `enum`, but whatever method you use, each severity level must be able to be cast to an integer.
-For that reason, it's not recommended to use `enum class` because it requires you to explicitly cast it to an integer.
-
-<br/>
-
-2. **Set tags for each severity level**
-
+## Usage
 ```c++
 #include <zwlog/Logger.hpp>
-#include "LogConstants.hpp"
+#include <zwlog/LogTargetFile.hpp>
+#include <zwlog/LogTargetMessageBox.hpp>
+#include <zwlog/DefaultFormatter.hpp>
 
-...
-
-zwlog::Get().SetSeverity(Severity::Info, "Info");
-zwlog::Get().SetSeverity(Severity::Warning, "Warning");
-zwlog::Get().SetSeverity(Severity::Error, "Error");
-```
-
-<br/>
-
-### Group Configuration
-This step is required to name each integer group id, as is the case with `enum` in Severity Configuration. <br/>
-
-```c++
-// LogConstants.hpp
-enum Group
+// Here, namespace is used to make a scope for enumerators instead of enum class
+// because you need to cast it to integer explicitly for each use if you use enum class
+namespace LogGroup
 {
-  Editor  = 0,
-  Engine
-};
+  enum
+  {
+    Default = 0,
+    Fatal
+  }
+}
+
+// ditto
+namespace LogSeverity
+{
+  enum
+  {
+    Info = 0,
+    Warning,
+    Error
+  }
+}
+
+int main()
+{
+  // Set tags for severities
+  // Tags are used by log formatters
+  zwlog::SetSeverity(LogSeverity::Info, "Info");
+  zwlog::SetSeverity(LogSeverity::Warning, "Warning");
+  zwlog::SetSeverity(LogSeverity::Error, "Error");
+
+  // Create log targets
+  // Your logs are written to these targets
+  auto file_target = zwlog::LogTargetFile::Create("logs/log.txt");
+  auto msgbox_target = zwlog::LogTargetMessageBox::Create();
+  
+  // Create log formatters 
+  // Log formatters are used to add useful information to your logs
+  // EX) [Error] Error Occurred!!
+  //     -- 15:36:22 PM | File: main.cpp | Line: 32 | Func: main --
+  auto default_formatter = zwlog::DefaultFormatter::Create();
+  
+  // Assign log formatters to log targets
+  // (Log targets basically use DefaultFormatter, so you don't have to do this in practice)
+  file_target.SetFormatter(default_formatter);
+  msgbox_target.SetFormatter(default_formatter);
+  
+  // Add log targets to the specified group
+  zwlog::AddTarget(LogGroup::Default, file_target);
+  zwlog::AddTarget(LogGroup::Fatal, file_target);
+  zwlog::AddTarget(LogGroup::Fatal, msgbox_target);
+  
+  // Logs are written to 'log.txt' file
+  LOG(LogGroup::Default, LogSeverity::Info) << "My Message!" << ' ' << "Hi!";
+  /*
+    [Info] My Message! Hi!
+    -- 17:22:10 PM | File: main.cpp | Line: 63 | Func: main --
+  */
+  
+  // Logs are written to 'log.txt' file and displayed in the message box
+  LOG(LogGroup::Fatal, LogSeverity::Error) << "Fatal Error Occured!";
+  /*
+    [Error] Fatal Error Occurred!!
+    -- 17:22:13 PM | File: main.cpp | Line: 64 | Func: main --
+  */
+}
+
 ```
 
-<br/>
-
-### LogTarget Configuration
-1. **Include `zwlog/LogTarget*.hpp` and the header file where the constants defined above exist** <br/>
- 
-
-```c++
-#include <zwlog/LogTargetConsole.hpp>
-#include "LogConstants.hpp"
-```
-
-<br/>
-
-2. **Create a log target instance**
-
-```c++
-auto console_target = zwlog::LogTargetConsole::Create(zwlog::LogTargetConsole::ConsoleType::Out);
-```
-
-<br/>
-
-3. **Add the target to `Logger`**
-
-```c++
-auto console_target = ···;
-zwlog::Get().AddTarget(Group::Editor, console_target);
-```
-
-<br/>
-
-### Logging
-
-```c++
-#include <zwlog/Logger.hpp>
-#include "LogConstants.hpp"
-
-...
-
-std::string name = "Eunho Choi";
-LOG(Group::Editor, Severity::Info) << "My name is " << name << '\n';
-```
-
-It would be tiresome to include multiple header files one by one when logging. <br/>
-So, I recommend that you create a new header file that includes zwlog/Logger.hpp and severity/group enums. <br/>
